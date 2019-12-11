@@ -1,10 +1,34 @@
 import json
 
-def read(file):
-  f = open(str(file)+'.txt', 'r')
-  fileout = json.loads(f.read())
+def readf(other):
+  f = open('carlist.txt', 'r')
+  file = json.loads(f.read())
   f.close()
+  x=0
+  fileout=[]
+  while (x<len(file)):
+    f = open(str(file[x])+'.txt', 'r')
+    file1 = json.loads(f.read())
+    f.close()
+    fileout.append(file1)
+    x=x+1
+  if other==1:
+    fileout=file
+  else:
+    fileout=fileout
   return (fileout) 
+
+def writef(file):
+  f = open('carlist.txt', 'r')
+  list = json.loads(f.read())
+  f.close()
+  x=0
+  while (x<len(list)):
+    f = open(str(list[x])+'c.txt', 'w+')
+    f.write(json.dumps(file.get(list[x],"")))
+    f.close()
+    x=x+1
+  return (file)
 
 def dejson(dict,location,locationlist):
   dict2={}
@@ -87,6 +111,7 @@ def invextract(list):
 def classxtract(list):
   loop=0
   out=[]
+  out2={}
   while len(list)>loop:
     racepos=list[loop]
     typep=racepos.get("type","1")
@@ -99,7 +124,8 @@ def classxtract(list):
     else:
       print (typep)
     loop=loop+1
-  return (out)
+  out2["class"]=out
+  return (out2)
 
 def getlist(dic,re1,re2,list):
   dic1=dic.get(re1,"stat3")
@@ -176,11 +202,16 @@ def asemble(text):
   classlist=['type','subType','friendlyTypeName','friendlySubtypeName','isGranted']
   carlist=text.get("character","junk")
   mainout={}
-  print(getlist(carlist,"modifiers","class",classlist))
+  mainout["characterinfo"]=(getlist(carlist,"modifiers","class",classlist))
   mainout.update(invextract(invget(carlist)))
   mainout.update(statget(carlist))
   mainout.update(dejson(text,"character",list))
   mainout.update(racextract(raceget(carlist)))
-  print (classxtract(classget(carlist)))
+  mainout.update(classxtract(classget(carlist)))
   return (mainout)
-print(asemble(read("car1")))
+x=0
+final={}
+while (x<len(readf(0))):
+  final[readf(1)[x]]=asemble(readf(0)[x])
+  x=x+1
+writef(final)
